@@ -1,0 +1,7 @@
+report_id,username,tender_id,location,description,photo,status
+R0001,citizen_user,1,Main Street,Cracks found near bridge section,bridge_crack.jpg,Resolved
+R0002,citizen_user,2,2nd Avenue,Work completed successfully,completion_photo.jpg,Verified
+R0003,citizen_user,1,Main Street,Water logging issue reported,water_issue.jpg,In Progress
+R0004,citizen_user,3,Oak Lane,Pothole near street sign,pothole.jpg,In Progress
+R0005,citizen_user,2,2nd Avenue,Streetlight is out,streetlight.jpg,Pending
+R0006,suraj2,1,Dd,0otholes,uploads/Screenshot_20250915_085922.jpg,Resolved

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contractor Dashboard - RoadTranspancy  Portal</title>
+    <style>
+        /* Global body and font */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            min-height: 100vh;
+        }
+
+        /* Container styling */
+        .container {
+            background: white;
+            padding: 30px 40px;
+            margin: 50px auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            max-width: 600px;
+        }
+
+        /* Buttons */
+        .button, button {
+            background: #4facfe;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .button:hover, button:hover {
+            background: #00f2fe;
+        }
+
+        /* Inputs */
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        /* Flash messages */
+        .flash-message {
+            color: red;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* Links */
+        a {
+            color: #4facfe;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background: #4facfe;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Sidebar menu for dashboard */
+        .sidebar {
+            background: #4facfe;
+            color: white;
+            padding: 20px;
+            width: 200px;
+            min-height: 100vh;
+            position: fixed;
+        }
+        .sidebar a {
+            display: block;
+            color: white;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .sidebar a:hover {
+            color: #00f2fe;
+        }
+
+        /* Dashboard content area */
+        .main-content {
+            margin-left: 220px;
+            padding: 20px;
+        }
+        /* Specific Styles for Reports list to make it look good with the provided style */
+        .reports-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .report-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .report-item h3 {
+            margin: 0;
+            color: #333;
+        }
+        .report-item p {
+            margin: 5px 0 0;
+            color: #555;
+        }
+        .update-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Contractor Portal</h2>
+        <a href="{{ url_for('contractor_dashboard') }}">📋 My Reports</a>
+        <a href="{{ url_for('logout') }}" class="logout">Logout</a>
+    </div>
+    
+    <div class="main-content">
+        <h1>Welcome, {{ username }}!</h1>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <h2>My Assigned Reports</h2>
+        
+        <div class="reports-list">
+        {% if reports %}
+            {% for report in reports %}
+                <div class="report-item">
+                    <div>
+                        <h3>Report ID: {{ report.get('report_id') }} - {{ report.get('description') }}</h3>
+                        <p>Current Status: <span class="report-status status-{{ report.get('status', 'pending') | lower | replace(' ', '-') }}">{{ report.get('status') }}</span></p>
+                    </div>
+                    
+                    <form action="{{ url_for('update_report_status', report_id=report.get('report_id')) }}" method="POST" class="update-form">
+                        <input type="hidden" name="report_id" value="{{ report.get('report_id') }}">
+                        <select name="new_status">
+                            <option value="Pending" {% if report.get('status') == 'Pending' %}selected{% endif %}>Pending</option>
+                            <option value="In Progress" {% if report.get('status') == 'In Progress' %}selected{% endif %}>In Progress</option>
+                            <option value="Resolved" {% if report.get('status') == 'Resolved' %}selected{% endif %}>Resolved</option>
+                        </select>
+                        <button type="submit">Update Status</button>
+                    </form>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>You have no assigned reports at this time.</p>
+        {% endif %}
+        </div>
+    </div>
+</body>
+</html>

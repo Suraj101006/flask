@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="UTF-8">
+    <title>Reports - RoadTranspancy  Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            min-height: 100vh;
+            background: #f4f7fa;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(to bottom, #4facfe, #00f2fe);
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar h2 {
+            margin-top: 0;
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            margin: 10px 0;
+            font-weight: 500;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .sidebar a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Main content */
+        .main {
+            flex: 1;
+            padding: 30px;
+        }
+        .main h1 {
+            margin-top: 0;
+        }
+
+        /* Report Form */
+        .report-form {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        .report-form input, .report-form textarea, .report-form button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+        .report-form textarea {
+            resize: vertical;
+            height: 100px;
+        }
+        .report-form button {
+            background: #4facfe;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .report-form button:hover {
+            background: #00f2fe;
+        }
+
+        /* Reports Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #4facfe;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        /* Logout button */
+        .logout {
+            margin-top: auto;
+            padding-top: 20px;
+        }
+        .logout a {
+            display: inline-block;
+            padding: 10px;
+            background: #ff5e62;
+            border-radius: 10px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .logout a:hover {
+            background: #ff9966;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>RoadTranspancy  Portal</h2>
+        <a href="{{ url_for('dashboard') }}">匠 Dashboard</a>
+        <a href="{{ url_for('tenders') }}">淘 Tenders</a>
+        <a href="{{ url_for('report') }}">統 Reports</a>
+        <a href="{{ url_for('feedback') }}">町 Feedback</a>
+
+        <div class="logout">
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="main">
+        <h1>Submit a New Report</h1>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div style="color:red; margin-bottom: 10px; font-weight: bold;">
+              {% for message in messages %}
+                <p>{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form class="report-form" method="POST" enctype="multipart/form-data">
+            <input type="text" name="tender_id" placeholder="Tender ID (e.g., 101)" required>
+            <input type="text" name="location" placeholder="Location" required>
+            <textarea name="description" placeholder="Description of the issue..." rows="3" required></textarea>
+            <label for="photo">Upload Photo</label>
+            <input type="file" name="photo" required>
+            <button type="submit">Submit Report</button>
+        </form>
+
+        <h2>My Reports</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Report ID</th>
+                    <th>Tender ID</th>
+                    <th>Location</th>
+                    <th>Description</th>
+                    <th>Photo</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td>{{ report.report_id }}</td>
+                    <td>{{ report.tender_id }}</td>
+                    <td>{{ report.location }}</td>
+                    <td>{{ report.description }}</td>
+                    <td>
+                        {% if report.photo %}
+                            <img src="{{ url_for('static', filename=report.photo) }}" width="80" style="border-radius:6px;">
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td><span class="status {{ report.status.replace(' ','') }}">{{ report.status }}</span></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align:center;">No reports submitted yet</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
